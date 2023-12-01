@@ -32,7 +32,7 @@ body { margin: 0; padding: 0; }
         map.setFog({}); // Set the default atmosphere style
     });
     var map_data = undefined
-    fetch('./data.geojson')
+    fetch('https://akashgudi.github.io/mapping/data.geojson')
     .then(res => res.json())
     .then(data => map_data=data)
     map.on('load', () => {
