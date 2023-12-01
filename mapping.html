@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Load data from an external GeoJSON file</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYWthc2hndWRpIiwiYSI6ImNscDE4eHR2NjBoZTAyaXFpdWlkdndybzcifQ.2kqzaD_4v8S3LyB7DVWTmA';
+    const map = new mapboxgl.Map({
+        container: 'map', // container ID
+        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+        style: 'mapbox://styles/mapbox/satellite-v9', // style URL
+        projection: 'globe', // Display the map as a globe, since satellite-v9 defaults to Mercator
+        zoom: 11, // starting zoom
+        center: [
+        153.08633,
+        -26.49172
+      ] // // starting center in [lng, lat]
+    });
+
+    map.on('style.load', () => {
+        map.setFog({}); // Set the default atmosphere style
+    });
+    var map_data = undefined
+    fetch('./data.geojson')
+    .then(res => res.json())
+    .then(data => map_data=data)
+    map.on('load', () => {
+        map.addSource('earthquakes', {
+            type: 'geojson',
+            data: map_data
+        });
+
+        map.addLayer({
+            'id': 'earthquakes-layer',
+            'type': 'circle',
+            'source': 'earthquakes',
+            'paint': {
+                'circle-radius': 6,
+                'circle-stroke-width': 2,
+                'circle-color': '#0985bc',
+                'circle-stroke-color': 'white',
+                
+            }
+        });
+
+        map.addLayer({
+            'id' : 'polygon-layer',
+            'type' : 'fill',
+            'source' : 'earthquakes',
+            'paint' : {
+                'fill-color' : 'blue',
+                'fill-opacity' : 0.2
+            }
+        })
+    });
+</script>
+
+</body>
+</html>
